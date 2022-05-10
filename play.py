@@ -15,7 +15,7 @@ def parse_cli_args() -> argparse.Namespace:
         solution_arg = solution_arg.upper()
         if not isinstance(solution_arg, str) or len(solution_arg) != game.LENGTH:
             raise argparse.ArgumentTypeError(f"--solution argument must be a {game.LENGTH}-letter word")
-        if solution_arg not in game.VALID_SOLUTIONS:
+        if solution_arg not in game.VALID_GUESSES:
             raise argparse.ArgumentTypeError(f"{solution_arg} is not in dict")
         return solution_arg
 
@@ -43,12 +43,12 @@ if __name__ == "__main__":
 
     cli_args = parse_cli_args()
 
-    if cli_args.today:
+    if cli_args.today and not cli_args.solution:
         delta = (datetime.utcnow() - datetime(2021, 6, 19)).days % len(game.VALID_SOLUTIONS)
         solution = game.VALID_SOLUTIONS[delta]
         player.GAME_NUMBER = delta
 
-    elif cli_args.day:
+    elif cli_args.day and not cli_args.solution:
         delta = cli_args.day % len(game.VALID_SOLUTIONS)
         solution = game.VALID_SOLUTIONS[delta]
         player.GAME_NUMBER = delta
@@ -66,6 +66,9 @@ if __name__ == "__main__":
         except (KeyboardInterrupt, EOFError):
             print()
             player.quit()
+
+        if cli_args.solution != None:
+            exit()
 
         try:
             player.again()
